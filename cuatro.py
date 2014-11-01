@@ -264,7 +264,7 @@ class Game():
 
 		self._playerOne = HumanPlayer(name = "Jugador 1")
 		if int(option) == 1:
-			self._playerTwo = CpuPlayer(self._checker, self._playerOne.symbol, "@")
+			self._playerTwo = CpuPlayer(self._checker, self._playerOne.symbol)
 		else:
 			self._playerTwo = HumanPlayer(name = "Jugador 2")
 
