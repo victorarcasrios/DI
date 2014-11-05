@@ -14,23 +14,48 @@ class App:
 		self._glade.add_from_file(self._gladeFile)
 		
 		## Widgets
-		self.mainWindow = self._glade.get_object("window")
+		self.mainWindow = self._glade.get_object("mainWindow")
 		self.listAllButton = self._glade.get_object("listAllButton")
+		self.saveButton = self._glade.get_object("saveButton")
+		self.okButton = self._glade.get_object("okButton")
+
 		## Handlers
 		self.mainWindow.connect("destroy", Gtk.main_quit)
-		self.listAllButton.connect("clicked", self.on_listAllButton_clicked)
+		self.listAllButton.connect("clicked", self._listAllUsers)
+		self.saveButton.connect("clicked", self._saveData)
+		self.okButton.connect("activate", Gtk.main_quit)
 
 		self.mainWindow.show_all()
 
+	def _listAllUsers(self, widget):
+		listWindow = ListWindow()
 
-	def on_listAllButton_clicked(self, widget):
+	def _saveData(self, widget):
 		pass
 	
-	def on_okButton_activate(self):
+	def _accept(self, widget):
 		pass
 
-	def on_saveButton_clicked(self):
-		pass
+###########################################################################################
+
+class ListWindow:
+
+	def __init__(self):
+		self._model = Model()
+
+		self.listStore = Gtk.ListStore(str, str, str, str, str, str)
+		users = self._model.listAll()
+		for user in users:
+			self.listStore.append(user)
+
+		self.treeView = Gtk.TreeView(self.listStore)
+		self.listWindow = Gtk.Window()
+		self.listWindow.add(self.treeView);
+
+		self.listWindow.connect("destroy", Gtk.main_quit)
+		self.listWindow.show_all()
+
+###########################################################################################
 
 class Model:
 
@@ -46,8 +71,10 @@ class Model:
 		self._conn.commit();
 
 	def listAll(self):
-		self._c.execute("SELECT * FROM {0}".format(self._table))
+		self._c.execute("SELECT nick, password, email, name, surname, address FROM {0}".format(self._table))
 		return self._c.fetchall()
+
+###########################################################################################
 
 if __name__ == "__main__":
 	app = App()
