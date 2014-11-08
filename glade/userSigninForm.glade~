@@ -261,7 +261,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="message">
-            <property name="sensitive">False</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">*Todos los datos son obligatorios</property>
             <attributes>

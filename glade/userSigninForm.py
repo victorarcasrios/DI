@@ -4,15 +4,22 @@
 from gi.repository import Gtk
 import sqlite3
 
-## TODO implement methods
-class App:
+class GtkClass:
 
 	def __init__(self):
 		self._model = Model()
 		self._gladeFile = "userSigninForm.glade"
 		self._glade = Gtk.Builder()
 		self._glade.add_from_file(self._gladeFile)
-		
+
+###########################################################################################
+
+## TODO hide not filled message and show only when user tries to save data with empty fields
+class App(GtkClass):
+
+	def __init__(self):
+		GtkClass.__init__(self);
+
 		## Widgets
 		self.mainWindow = self._glade.get_object("mainWindow")
 		self.listAllButton = self._glade.get_object("listAllButton")
@@ -23,7 +30,7 @@ class App:
 		self.mainWindow.connect("destroy", Gtk.main_quit)
 		self.listAllButton.connect("clicked", self._listAllUsers)
 		self.saveButton.connect("clicked", self._saveData)
-		self.okButton.connect("activate", Gtk.main_quit)
+		self.okButton.connect("clicked", Gtk.main_quit)
 
 		self.mainWindow.show_all()
 
@@ -31,28 +38,44 @@ class App:
 		listWindow = ListWindow()
 
 	def _saveData(self, widget):
-		pass
-	
-	def _accept(self, widget):
-		pass
+		data = (
+			self._glade.get_object("nickEntry").get_text(),
+			self._glade.get_object("passwordEntry").get_text(),
+			self._glade.get_object("emailEntry").get_text(),
+			self._glade.get_object("nameEntry").get_text(),
+			self._glade.get_object("surnameEntry").get_text(),
+			self._glade.get_object("addressEntry").get_text()
+			)
+		if(self._isProperUserData(data)):
+			self._model.insert(data)
+
+	def _isProperUserData(self, data):
+		for datum in data:
+			if not datum:
+				return False
+		return True
 
 ###########################################################################################
 
-class ListWindow:
+class ListWindow(GtkClass):
 
 	def __init__(self):
-		self._model = Model()
+		GtkClass.__init__(self);
+	
+		self.listWindow = self._glade.get_object("listWindow")
+		self.treeView = self._glade.get_object("treeView")
 
 		self.listStore = Gtk.ListStore(str, str, str, str, str, str)
 		users = self._model.listAll()
 		for user in users:
 			self.listStore.append(user)
 
-		self.treeView = Gtk.TreeView(self.listStore)
-		self.listWindow = Gtk.Window()
-		self.listWindow.add(self.treeView);
+		columnNames = "Usuario", "Contraseña", "Email", "Nombre", "Apellidos", "Dirección"
+		for i in range(0, len(columnNames)):
+			self.treeView.append_column(Gtk.TreeViewColumn(columnNames[i], Gtk.CellRendererText(), text=i))
+		
+		self.treeView.set_model(self.listStore)
 
-		self.listWindow.connect("destroy", Gtk.main_quit)
 		self.listWindow.show_all()
 
 ###########################################################################################
@@ -65,9 +88,9 @@ class Model:
 		self._c = self._conn.cursor()
 		self._table = "users"
 
-	def insert(self, nick, password, email, name, surname, address):
+	def insert(self, data):
 		insert = "INSERT INTO {0} VALUES (NULL, ?, ?, ?, ?, ?, ?)".format(self._table)
-		self._c.execute(insert, (nick, password, email, name, surname, address));
+		self._c.execute(insert, data);
 		self._conn.commit();
 
 	def listAll(self):
