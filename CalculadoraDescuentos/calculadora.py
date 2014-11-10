@@ -24,6 +24,7 @@ class App(MyGtkObject):
 		
 		## Widgets
 		self.mainWindow = self._glade.get_object("mainWindow")
+		self.quitAction = self._glade.get_object("quitImageMenuItem")
 		self.priceEntry = self._glade.get_object("priceEntry")
 		self.comboBox = self._glade.get_object("discountComboBox")
 		self.finalPriceOutput = self._glade.get_object("finalPriceOutput")
@@ -33,10 +34,15 @@ class App(MyGtkObject):
 		
 		## Event Handlers
 		self.mainWindow.connect("destroy", Gtk.main_quit)
+		self.mainWindow.connect("key_press_event", self._onKeyPressEvent)
+		self.quitAction.connect("activate", Gtk.main_quit)
 		self.priceEntry.connect("changed", self._onPriceEntryChanged)
 		self.comboBox.connect("changed", self._calculateAndDisplay)
 
 		self.mainWindow.show_all()	
+
+	def _onKeyPressEvent(self, obj, event):
+		print event.keyval
 
 	def _fillComboBox(self):
 		store = Gtk.ListStore(int)
