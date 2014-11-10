@@ -7,16 +7,20 @@ from gi.repository import Gtk
 ## 		- refactor comboBoxCreation, convert _fillComboBox function and other logic of comboBox
 ## 		creation in App class in a new discountComboBox class
 
-class App():
-
-	con = "con"
-
+class MyGtkObject():
+	"""Encapsulation object from wich inherit only for generalization purposes"""
 	def __init__(self):
-		self._discounts = 5, 10, 20
-
 		self._gladeFile = "calculadora.glade"
 		self._glade = Gtk.Builder()
 		self._glade.add_from_file(self._gladeFile)
+
+###################################################################################################
+
+class App(MyGtkObject):
+	"""Manage mainWindow view"""
+	def __init__(self):
+		MyGtkObject.__init__(self)
+		self._discounts = 5, 10, 20
 		
 		## Widgets
 		self.mainWindow = self._glade.get_object("mainWindow")
@@ -45,8 +49,8 @@ class App():
 		self.comboBox.add_attribute(cellRendererText, "text", 0)
 
 	def _onPriceEntryChanged(self, obj):
-		if not isNumeric(self.priceEntry.get_text()):
-			print "ERROR"
+		value = self.priceEntry.get_text()
+		if value and not isNumeric(value):
 			dialog = NotNumericErrorDialog()
 		else:
 			self._calculateAndDisplay(obj)
@@ -71,13 +75,25 @@ class App():
 		else:
 			return True, float(price), float(self.comboBox.get_model()[treeIter][0])
 
-## TODO mix this class implementation with todo xml glade file
-class NotNumericErrorDialog(Gtk.MessageDialog):
+###################################################################################################
 
+## TODO mix this class implementation with todo xml glade file
+class NotNumericErrorDialog(MyGtkObject):
+	"""Manage the inputErrorMessageDialog view"""
 	def __init__(self):
-		Gtk.MessageDialog.__init__(self, 0, Gtk.MessageType.ERROR, Gtk.ButtonsType.CANCEL, "No es un número válido")
-		self.format_secundary_text("Hola")
-		self.run()
+		MyGtkObject.__init__(self)
+		self.messageDialog = self._glade.get_object("inputErrorMessageDialog");
+		self.button = self._glade.get_object("messageDialogButton")
+
+		self.button.connect("clicked", self._destroyDialog)
+		
+		self.messageDialog.run()
+
+	def _destroyDialog(self, obj):
+		self.messageDialog.destroy()
+
+
+###################################################################################################
 
 def isNumeric(value):
 	try:
