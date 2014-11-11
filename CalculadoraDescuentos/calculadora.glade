@@ -2,6 +2,42 @@
 <!-- Generated with glade 3.16.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
+  <object class="GtkAboutDialog" id="aboutDialog">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Acerca de Calculadora de Descuentos</property>
+    <property name="modal">True</property>
+    <property name="window_position">center-on-parent</property>
+    <property name="type_hint">dialog</property>
+    <property name="program_name">Calculadora de Descuentos 1.0</property>
+    <property name="comments" translatable="yes">Calcula el descuento del 5%, 10% o 20% sobre el precio indicado.
+IES Serpis</property>
+    <property name="website">http://iesserpis.edu.gva.es/</property>
+    <property name="website_label" translatable="yes">http://iesserpis.edu.gva.es/</property>
+    <property name="authors">Víctor Francisco Arcas Ríos</property>
+    <property name="logo_icon_name"/>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="aboutdialog-vbox1">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="aboutdialog-action_area1">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -240,6 +276,7 @@
   </object>
   <object class="GtkMessageDialog" id="inputErrorMessageDialog">
     <property name="can_focus">False</property>
+    <property name="window_position">center-on-parent</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="messagedialog-vbox1">

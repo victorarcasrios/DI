@@ -2,13 +2,17 @@
 #-*-coding: UTF-8 -*-
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 
 ## TODO
 ## 		- refactor comboBoxCreation, convert _fillComboBox function and other logic of comboBox
 ## 		creation in App class in a new discountComboBox class
+## 		- implement event handler to close about dialog with exit button
+## 		- refactor -> encapsulate about dialog in aboutDialog class
+
 
 class MyGtkObject():
-	"""Encapsulation object from wich inherit only for generalization purposes"""
+	"""Data class from whom inherit only for generalization purposes"""
 	def __init__(self):
 		self._gladeFile = "calculadora.glade"
 		self._glade = Gtk.Builder()
@@ -24,7 +28,9 @@ class App(MyGtkObject):
 		
 		## Widgets
 		self.mainWindow = self._glade.get_object("mainWindow")
+		self.aboutDialog = self._glade.get_object("aboutDialog")
 		self.quitAction = self._glade.get_object("quitImageMenuItem")
+		self.aboutAction = self._glade.get_object("aboutImageMenuItem")
 		self.priceEntry = self._glade.get_object("priceEntry")
 		self.comboBox = self._glade.get_object("discountComboBox")
 		self.finalPriceOutput = self._glade.get_object("finalPriceOutput")
@@ -36,13 +42,15 @@ class App(MyGtkObject):
 		self.mainWindow.connect("destroy", Gtk.main_quit)
 		self.mainWindow.connect("key_press_event", self._onKeyPressEvent)
 		self.quitAction.connect("activate", Gtk.main_quit)
+		self.aboutAction.connect("activate", self._displayAboutDialog)
 		self.priceEntry.connect("changed", self._onPriceEntryChanged)
 		self.comboBox.connect("changed", self._calculateAndDisplay)
 
 		self.mainWindow.show_all()	
 
 	def _onKeyPressEvent(self, obj, event):
-		print event.keyval
+		if(event.state & Gdk.ModifierType.CONTROL_MASK and event.keyval == 113):
+			Gtk.main_quit()			
 
 	def _fillComboBox(self):
 		store = Gtk.ListStore(int)
@@ -81,9 +89,11 @@ class App(MyGtkObject):
 		else:
 			return True, float(price), float(self.comboBox.get_model()[treeIter][0])
 
+	def _displayAboutDialog(self, obj):
+		self.aboutDialog.run()
+
 ###################################################################################################
 
-## TODO mix this class implementation with todo xml glade file
 class NotNumericErrorDialog(MyGtkObject):
 	"""Manage the inputErrorMessageDialog view"""
 	def __init__(self):
