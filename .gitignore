@@ -52,3 +52,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Compressed files
+*.zip
+*.tar.gz
