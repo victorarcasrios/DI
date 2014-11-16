@@ -7,8 +7,6 @@ from gi.repository import Gdk
 ## TODO
 ## 		- refactor comboBoxCreation, convert _fillComboBox function and other logic of comboBox
 ## 		creation in App class in a new discountComboBox class
-##		- catch ValueError trow when selecting discount percentage without having filled price
-##		field 
 
 class MyGtkObject():
 	"""Data class from whom inherit only for generalization purposes"""
@@ -82,10 +80,10 @@ class App(MyGtkObject):
 		price = self.priceEntry.get_text()
 		treeIter = self.comboBox.get_active_iter()
 
-		if price is None or treeIter is None:
+		if not price or not treeIter:
 			return False, False, False
 		else:
-			return True, float(price), float(self.comboBox.get_model()[treeIter][0])
+			return True, float(price), int(self.comboBox.get_model()[treeIter][0])
 
 ###################################################################################################
 
