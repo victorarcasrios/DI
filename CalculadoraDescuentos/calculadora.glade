@@ -16,12 +16,12 @@ IES Serpis</property>
     <property name="authors">Víctor Francisco Arcas Ríos</property>
     <property name="logo_icon_name"/>
     <child internal-child="vbox">
-      <object class="GtkBox" id="aboutdialog-vbox1">
+      <object class="GtkBox" id="aboutDialogVBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
-          <object class="GtkButtonBox" id="aboutdialog-action_area1">
+          <object class="GtkButtonBox" id="aboutDialogButtonBox">
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
           </object>
