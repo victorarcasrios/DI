@@ -4,6 +4,13 @@
 from gi.repository import Gtk
 import sqlite3
 
+## TODO 
+## - Display not filled message when user tries to save data with empty fields
+## - Display succesful insertion message when record was properly inserted
+## - Implement refresh button and automatically refresh listWindow treeView 
+##		when new record was inserted
+## - Implement required actions in menubar
+
 class GtkClass:
 	"""Data class for inheritance purposes only"""
 	def __init__(self):
@@ -14,7 +21,6 @@ class GtkClass:
 
 ###########################################################################################
 
-## TODO hide not filled message and show only when user tries to save data with empty fields
 class App(GtkClass):
 	"""Manage mainWindow"""
 	def __init__(self):
@@ -24,36 +30,42 @@ class App(GtkClass):
 		self.mainWindow = self._glade.get_object("mainWindow")
 		self.listAllButton = self._glade.get_object("listAllButton")
 		self.saveButton = self._glade.get_object("saveButton")
-		self.okButton = self._glade.get_object("okButton")
+		self.closeButton = self._glade.get_object("closeButton")
+
+		self.entries = (
+			self._glade.get_object("nickEntry"),
+			self._glade.get_object("passwordEntry"),
+			self._glade.get_object("emailEntry"),
+			self._glade.get_object("nameEntry"),
+			self._glade.get_object("surnameEntry"),
+			self._glade.get_object("addressEntry")
+			)
 
 		## Handlers
 		self.mainWindow.connect("destroy", Gtk.main_quit)
-		self.listAllButton.connect("clicked", self._listAllUsers)
+		self.listAllButton.connect("clicked", lambda obj: ListWindow())
 		self.saveButton.connect("clicked", self._saveData)
-		self.okButton.connect("clicked", Gtk.main_quit)
+		self.closeButton.connect("clicked", Gtk.main_quit)
 
 		self.mainWindow.show_all()
 
-	def _listAllUsers(self, widget):
-		listWindow = ListWindow()
-
 	def _saveData(self, widget):
-		data = (
-			self._glade.get_object("nickEntry").get_text(),
-			self._glade.get_object("passwordEntry").get_text(),
-			self._glade.get_object("emailEntry").get_text(),
-			self._glade.get_object("nameEntry").get_text(),
-			self._glade.get_object("surnameEntry").get_text(),
-			self._glade.get_object("addressEntry").get_text()
-			)
+		data = self._getData()
 		if(self._isProperUserData(data)):
 			self._model.insert(data)
+			self._emptyEntries()
 
+	def _getData(self):
+		return tuple(entry.get_text() for entry in self.entries)
+	
 	def _isProperUserData(self, data):
 		for datum in data:
 			if not datum:
 				return False
 		return True
+
+	def _emptyEntries(self):
+		tuple(entry.set_text("") for entry in self.entries)
 
 ###########################################################################################
 

@@ -552,8 +552,8 @@ será eliminada</property>
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="okButton">
-            <property name="label" translatable="yes">Aceptar</property>
+          <object class="GtkButton" id="closeButton">
+            <property name="label" translatable="yes">Cerrar</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
