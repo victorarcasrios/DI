@@ -7,9 +7,6 @@ from gi.repository import Gdk
 ## TODO
 ## 		- refactor comboBoxCreation, convert _fillComboBox function and other logic of comboBox
 ## 		creation in App class in a new discountComboBox class
-## 		- implement event handler to close about dialog with exit button
-## 		- refactor -> encapsulate about dialog in aboutDialog class
-
 
 class MyGtkObject():
 	"""Data class from whom inherit only for generalization purposes"""
@@ -28,7 +25,6 @@ class App(MyGtkObject):
 		
 		## Widgets
 		self.mainWindow = self._glade.get_object("mainWindow")
-		self.aboutDialog = self._glade.get_object("aboutDialog")
 		self.quitAction = self._glade.get_object("quitImageMenuItem")
 		self.aboutAction = self._glade.get_object("aboutImageMenuItem")
 		self.priceEntry = self._glade.get_object("priceEntry")
@@ -42,7 +38,7 @@ class App(MyGtkObject):
 		self.mainWindow.connect("destroy", Gtk.main_quit)
 		self.mainWindow.connect("key_press_event", self._onKeyPressEvent)
 		self.quitAction.connect("activate", Gtk.main_quit)
-		self.aboutAction.connect("activate", self._displayAboutDialog)
+		self.aboutAction.connect("activate", lambda obj: AboutDialog())
 		self.priceEntry.connect("changed", self._onPriceEntryChanged)
 		self.comboBox.connect("changed", self._calculateAndDisplay)
 
@@ -84,12 +80,24 @@ class App(MyGtkObject):
 		price = self.priceEntry.get_text()
 		treeIter = self.comboBox.get_active_iter()
 
-		if price is None or treeIter is None:
+		if not price or not treeIter:
 			return False, False, False
 		else:
-			return True, float(price), float(self.comboBox.get_model()[treeIter][0])
+			return True, float(price), int(self.comboBox.get_model()[treeIter][0])
 
-	def _displayAboutDialog(self, obj):
+###################################################################################################
+
+class AboutDialog(MyGtkObject):
+	"""Manage the AboutDialog window"""
+
+	def __init__(self):
+		MyGtkObject.__init__(self)
+		self.aboutDialog = self._glade.get_object("aboutDialog")
+		self.aboutDialogButtonBox = self._glade.get_object("aboutDialogButtonBox")
+		
+		self._closeButton = self.aboutDialogButtonBox.get_children()[0]
+		self._closeButton.connect( "clicked", lambda obj: self.aboutDialog.destroy() )
+
 		self.aboutDialog.run()
 
 ###################################################################################################
@@ -101,13 +109,9 @@ class NotNumericErrorDialog(MyGtkObject):
 		self.messageDialog = self._glade.get_object("inputErrorMessageDialog");
 		self.button = self._glade.get_object("messageDialogButton")
 
-		self.button.connect("clicked", self._destroyDialog)
+		self.button.connect( "clicked", lambda obj: self.messageDialog.destroy() )
 		
 		self.messageDialog.run()
-
-	def _destroyDialog(self, obj):
-		self.messageDialog.destroy()
-
 
 ###################################################################################################
 
