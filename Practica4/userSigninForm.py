@@ -10,6 +10,7 @@ import sqlite3
 ## - Implement refresh button and automatically refresh listWindow treeView 
 ##		when new record was inserted
 ## - Implement required actions in menubar
+## - Display unique restriction exception message when it happens
 
 class GtkClass:
 	"""Data class for inheritance purposes only"""
