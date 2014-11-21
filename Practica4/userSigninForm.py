@@ -7,8 +7,6 @@ import sqlite3
 ## TODO 
 ## - Display not filled message when user tries to save data with empty fields
 ## - Display succesful insertion message when record was properly inserted
-## - Implement refresh button and automatically refresh listWindow treeView 
-##		when new record was inserted
 ## - Display unique restriction exception message when it happens
 
 class GtkClass:
@@ -28,6 +26,7 @@ class App(GtkClass):
 
 		## Widgets
 		self.mainWindow = self._glade.get_object("mainWindow")
+		self.listWindow = None
 		self.listAllButton = self._glade.get_object("listAllButton")
 		self.saveButton = self._glade.get_object("saveButton")
 		self.closeButton = self._glade.get_object("closeButton")
@@ -43,17 +42,22 @@ class App(GtkClass):
 
 		## Handlers
 		self.mainWindow.connect("destroy", Gtk.main_quit)
-		self.listAllButton.connect("clicked", lambda obj: ListWindow())
+		self.listAllButton.connect("clicked", self._newListWindow)
 		self.saveButton.connect("clicked", self._saveData)
 		self.closeButton.connect("clicked", Gtk.main_quit)
 
 		self.mainWindow.show_all()
 
+	def _newListWindow(self, widget):
+		self.listWindow = ListWindow()
+
 	def _saveData(self, widget):
 		data = self._getData()
-		if(self._isProperUserData(data)):
+		if self._isProperUserData(data):
 			self._model.insert(data)
 			self._emptyEntries()
+			if self.listWindow:
+				self.listWindow.refreshList()
 
 	def _getData(self):
 		return tuple(entry.get_text() for entry in self.entries)
@@ -91,15 +95,15 @@ class ListWindow(GtkClass):
 		self.aboutAction = self._glade.get_object("aboutAction")
 
 		self._prepareTreeView()
-		self._refreshList()
+		self.refreshList()
 		self.treeViewSelection = self.treeView.get_selection()
 
 		## Handlers
 		self.treeViewSelection.connect("changed", self._onTreeViewSelectionChanged)
 		self.deleteUserAction.connect("clicked", self._onDeleteUserActionClicked)
 		## Menu
-		self.openAction.connect("activate", self._refreshList)
-		self.refreshAction.connect("activate", self._refreshList)
+		self.openAction.connect("activate", self.refreshList)
+		self.refreshAction.connect("activate", self.refreshList)
 		self.closeAction.connect("activate", self._emptyList)
 		self.exitAction.connect("activate", lambda obj: self.listWindow.destroy())
 		self.deleteMenuAction.connect("activate", self._onDeleteUserActionClicked)
@@ -112,7 +116,7 @@ class ListWindow(GtkClass):
 		for i in range(1, len(columnNames)):
 			self.treeView.append_column(Gtk.TreeViewColumn(columnNames[i], Gtk.CellRendererText(), text=i))
 
-	def _refreshList(self, obj = False):
+	def refreshList(self, obj = False):
 		self.listStore.clear()
 		users = self._model.listAll()
 		for user in users:
@@ -145,7 +149,7 @@ class ListWindow(GtkClass):
 
 	def _onConfirmDeleteButtonClicked(self, obj):
 		self._model.delete(self._selectedUserId)
-		self._refreshList()
+		self.refreshList()
 		self.confirmDeleteDialog.dialog.destroy()
 
 ###########################################################################################
@@ -171,6 +175,7 @@ class ConfirmDeleteDialog(GtkClass):
 ###########################################################################################
 
 class AboutDialog(GtkClass):
+	"""Manage aboutDialog"""
 
 	def __init__(self):
 		GtkClass.__init__(self)
