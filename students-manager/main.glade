@@ -565,9 +565,9 @@ será eliminada</property>
     <columns>
       <!-- column-name ID -->
       <column type="guint64"/>
-      <!-- column-name Apellido paterno -->
+      <!-- column-name Apellido -->
       <column type="gchararray"/>
-      <!-- column-name Apellido materno -->
+      <!-- column-name Apellido1 -->
       <column type="gchararray"/>
       <!-- column-name Nombres -->
       <column type="gchararray"/>
