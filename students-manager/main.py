@@ -7,6 +7,7 @@ import sqlite3
 ###########################################################################################
 
 class App():
+	"""Main. Starts the app"""
 
 	def __init__(self):
 		self.mainWindow = MainWindow()
@@ -15,17 +16,21 @@ class App():
 ###########################################################################################
 
 class GladeObject():
+	"""Data class for inheritance purposes only"""
+
+	glade_file = "main.glade"
+	glade = Gtk.Builder()
+	glade.add_from_file(glade_file)
 
 	def __init__(self):
 		self.users = Users()
 
-		glade_file = "main.glade"
-		self.glade = Gtk.Builder()
-		self.glade.add_from_file(glade_file)
+		
 
 ###########################################################################################
 
 class MainWindow(GladeObject):
+	"""Manage main Window"""
 
 	def __init__(self):
 		GladeObject.__init__(self)
@@ -36,28 +41,27 @@ class MainWindow(GladeObject):
 
 		self.this_window.show_all()
 
+
 ###########################################################################################
 
 class TreeView(GladeObject):
+	"""Manage users TreeView"""
 
 	def __init__(self):
 		GladeObject.__init__(self)
 		self.this_tree_view = self.glade.get_object("treeView")
-		self.store = Gtk.ListStore(int, str, str, str, int, str)
-		self.this_tree_view.set_model(self.store)
+		self.store = self.glade.get_object("store")
 
 		self._prepare_columns()
 		self.refresh()
-		
 
 	def _prepare_columns(self):
 		column_names = "ID", "Apellido paterno", "Apellido materno", "Nombre", "DNI", "Direccion"
-		for i in range(1, len(column_names)):
-			self.this_tree_view.append_column(Gtk.TreeViewColumn(column_names[i], 
-				Gtk.CellRendererText(), text=i))
+		for index, name in enumerate(column_names):
+			self.this_tree_view.append_column(Gtk.TreeViewColumn(name, 
+				Gtk.CellRendererText(), text=index))
 
 	def refresh(self):
-		print "HI"
 		self.store.clear()
 		users = self.users.list_all()
 		for user in users:
@@ -69,7 +73,7 @@ class Users:
 	"""Model for ´users´ table"""
 
 	def __init__(self):
-		self._conn = sqlite3.connect("practica2.db")
+		self._conn = sqlite3.connect("main.db")
 		self._conn.text_factory = str
 		self._c = self._conn.cursor()
 		self._table = "users"
