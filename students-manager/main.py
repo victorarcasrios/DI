@@ -15,6 +15,8 @@ class App():
 
 ###########################################################################################
 
+## TODO refactor to data class w/ constructor. 
+##		Model variable users may be a class var, not an instance one
 class GladeObject():
 	"""Data class for inheritance purposes only"""
 
@@ -34,12 +36,63 @@ class MainWindow(GladeObject):
 
 	def __init__(self):
 		GladeObject.__init__(self)
-		self.this_window = self.glade.get_object("MainWindow")
-		self.tree_view = TreeView()
-		
+		self.this_window 	= self.glade.get_object("MainWindow")
+		self.tree_view 		= TreeView()
+		self.entries = {
+			"surname"		: self.glade.get_object("surnameEntry"),
+			"motherSurname"	: self.glade.get_object("motherSurnameEntry"),
+			"name"			: self.glade.get_object("nameEntry"),
+			"dni"			: self.glade.get_object("dniEntry"),
+			"address"		: self.glade.get_object("addressEntry")
+		}
+		self.buttons = {
+			"new"			: self.glade.get_object("newUserButton"),
+			"save"			: self.glade.get_object("saveUserButton"),
+			"cancel"		: self.glade.get_object("cancelUserButton"),
+			"update"		: self.glade.get_object("updateUserButton"),
+			"delete"		: self.glade.get_object("deleteUserButton"),
+			"close"			: self.glade.get_object("closeUserButton")
+		}
+
 		self.this_window.connect("destroy", Gtk.main_quit)
+		self.tree_view.selection.connect("changed", self._on_tree_view_selection_changed)
+		{entry.connect("changed", self._on_entry_changed) for k, entry in self.entries.iteritems()}
 
 		self.this_window.show_all()
+
+	def _on_entry_changed(self, entry):
+		self.buttons["cancel"].set_sensitive(False if self._buttons_are_empty() else True)
+
+	def _buttons_are_empty(self):
+		for key, entry in self.entries.iteritems():
+			if entry.get_text():
+				return False
+		return True
+
+	def _on_tree_view_selection_changed(self, selection):
+		model, self._selected_iter = selection.get_selected()
+		self._hasSelected = self._selected_iter != None
+
+		self._set_buttons_mode()
+
+	def	_set_buttons_mode(self):
+		if self._hasSelected:
+			self._set_buttons_UD_mode()
+		else:
+			self._set_buttons_creation_mode()
+
+	def _set_buttons_creation_mode(self):
+		self.buttons["new"].set_sensitive(True)
+		self.buttons["update"].set_sensitive(False)
+		self.buttons["delete"].set_sensitive(False)
+
+	def _set_buttons_UD_mode(self):
+		self.buttons["new"].set_sensitive(False)
+		self.buttons["update"].set_sensitive(True)
+		self.buttons["delete"].set_sensitive(True)
+
+	def _manageButtonsSensitivity(self):
+		pass
 
 
 ###########################################################################################
@@ -50,8 +103,9 @@ class TreeView(GladeObject):
 	def __init__(self):
 		GladeObject.__init__(self)
 		self.this_tree_view = self.glade.get_object("treeView")
-		self.store = self.glade.get_object("store")
-
+		self.store 			= self.glade.get_object("store")
+		self.selection 		= self.this_tree_view.get_selection()
+		
 		self._prepare_columns()
 		self.refresh()
 
