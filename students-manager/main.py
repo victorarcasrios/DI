@@ -52,13 +52,43 @@ class MainWindow(GladeObject):
 			"update"		: self.glade.get_object("updateUserButton"),
 			"delete"		: self.glade.get_object("deleteUserButton"),
 			"close"			: self.glade.get_object("closeUserButton")
-		}
-
+		}		
 		self.this_window.connect("destroy", Gtk.main_quit)
 		self.tree_view.selection.connect("changed", self._on_tree_view_selection_changed)
 		{entry.connect("changed", self._on_entry_changed) for k, entry in self.entries.iteritems()}
+		self.buttons["new"].connect("clicked", self._saveData)
+
+		## Set buttons sensitivity initial state
+		self._on_tree_view_selection_changed(self.tree_view.selection)
+		self._on_entry_changed(self.buttons['new'])
 
 		self.this_window.show_all()
+
+	## TODO Refactor to warning about unsuccesful insertion
+	def _saveData(self, widget):
+		data = self._get_data()
+		if self._is_proper_user_data(data):
+			self.users.insert(data)
+			self._empty_entries()
+			self.tree_view.refresh()
+
+	def _get_data(self):
+		return (
+			self.entries["surname"].get_text(),
+			self.entries["motherSurname"].get_text(),
+			self.entries["name"].get_text(),
+			self.entries["dni"].get_text(),
+			self.entries["address"].get_text()
+		)
+	
+	def _is_proper_user_data(self, data):
+		for datum in data:
+			if not datum:
+				return False
+		return True
+
+	def _empty_entries(self):
+		tuple(entry.set_text("") for key, entry in self.entries.iteritems())
 
 	def _on_entry_changed(self, entry):
 		self.buttons["cancel"].set_sensitive(False if self._buttons_are_empty() else True)
@@ -83,17 +113,15 @@ class MainWindow(GladeObject):
 
 	def _set_buttons_creation_mode(self):
 		self.buttons["new"].set_sensitive(True)
+		self.buttons["save"].set_sensitive(False)
 		self.buttons["update"].set_sensitive(False)
 		self.buttons["delete"].set_sensitive(False)
 
 	def _set_buttons_UD_mode(self):
 		self.buttons["new"].set_sensitive(False)
+		self.buttons["save"].set_sensitive(True)
 		self.buttons["update"].set_sensitive(True)
 		self.buttons["delete"].set_sensitive(True)
-
-	def _manageButtonsSensitivity(self):
-		pass
-
 
 ###########################################################################################
 
