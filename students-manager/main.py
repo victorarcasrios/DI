@@ -51,12 +51,17 @@ class MainWindow(GladeObject):
 			"cancel"		: self.glade.get_object("cancelUserButton"),
 			"update"		: self.glade.get_object("updateUserButton"),
 			"delete"		: self.glade.get_object("deleteUserButton"),
-			"close"			: self.glade.get_object("closeUserButton")
+			"close"			: self.glade.get_object("closeWindowButton")
 		}		
 		self.this_window.connect("destroy", Gtk.main_quit)
 		self.tree_view.selection.connect("changed", self._on_tree_view_selection_changed)
 		{entry.connect("changed", self._on_entry_changed) for k, entry in self.entries.iteritems()}
-		self.buttons["new"].connect("clicked", self._saveData)
+		self.buttons["new"].connect("clicked", self._prepare_to_create)
+		self.buttons["save"].connect("clicked", self._save_data)
+		self.buttons["update"].connect("clicked", self._update_data)
+		self.buttons["cancel"].connect("clicked", self._on_cancel_clicked)
+		self.buttons["delete"].connect("clicked", self._delete_user)
+		self.buttons["close"].connect("clicked", Gtk.main_quit)
 
 		## Set buttons sensitivity initial state
 		self._on_tree_view_selection_changed(self.tree_view.selection)
@@ -64,14 +69,35 @@ class MainWindow(GladeObject):
 
 		self.this_window.show_all()
 
-	## TODO Refactor to warning about unsuccesful insertion
-	def _saveData(self, widget):
+	def _prepare_to_create(self, widget):
+		self._clear_entries()
+		self.entries["surname"].grab_focus()	
+
+	# TODO Refactor to warning about unsuccesful insertion
+	def _save_data(self, widget):
 		data = self._get_data()
 		if self._is_proper_user_data(data):
 			self.users.insert(data)
-			self._empty_entries()
+			self._clear_entries()
 			self.tree_view.refresh()
 
+	def _update_data(self, widget):
+		pass
+
+	# TODO ask for confirmation
+	def _delete_user(self, widget):
+		user_id = self.tree_view.store[self._selected_iter][0]
+		self.users.delete(user_id)
+		self.tree_view.refresh()
+
+	# TODO clear entries if creating, restore current data in entries if updating
+	def _on_cancel_clicked(self, widget):
+		if self._hasSelected:
+			self._fill_entries_with(self.tree_view.store[self._selected_iter])
+		else:
+			self._clear_entries()
+
+	## Create and update HELPERS
 	def _get_data(self):
 		return (
 			self.entries["surname"].get_text(),
@@ -86,14 +112,13 @@ class MainWindow(GladeObject):
 			if not datum:
 				return False
 		return True
+	## End Create or update HELPERS
 
-	def _empty_entries(self):
-		tuple(entry.set_text("") for key, entry in self.entries.iteritems())
-
+	## CHANGED Event Handlers
 	def _on_entry_changed(self, entry):
-		self.buttons["cancel"].set_sensitive(False if self._buttons_are_empty() else True)
+		self.buttons["cancel"].set_sensitive(False if self._entries_are_empty() else True)
 
-	def _buttons_are_empty(self):
+	def _entries_are_empty(self):
 		for key, entry in self.entries.iteritems():
 			if entry.get_text():
 				return False
@@ -103,25 +128,37 @@ class MainWindow(GladeObject):
 		model, self._selected_iter = selection.get_selected()
 		self._hasSelected = self._selected_iter != None
 
-		self._set_buttons_mode()
-
-	def	_set_buttons_mode(self):
 		if self._hasSelected:
+			self._fill_entries_with(model[self._selected_iter])
 			self._set_buttons_UD_mode()
 		else:
+			self._clear_entries()
 			self._set_buttons_creation_mode()
 
+	def _fill_entries_with(self, data):
+		self.entries["surname"].set_text(data[1])
+		self.entries["motherSurname"].set_text(data[2])
+		self.entries["name"].set_text(data[3])
+		self.entries["dni"].set_text(data[4])
+		self.entries["address"].set_text(data[5])
+
+
 	def _set_buttons_creation_mode(self):
-		self.buttons["new"].set_sensitive(True)
-		self.buttons["save"].set_sensitive(False)
+		self.buttons["new"].set_sensitive(False)
+		self.buttons["save"].set_sensitive(True)
 		self.buttons["update"].set_sensitive(False)
 		self.buttons["delete"].set_sensitive(False)
 
 	def _set_buttons_UD_mode(self):
-		self.buttons["new"].set_sensitive(False)
-		self.buttons["save"].set_sensitive(True)
+		self.buttons["new"].set_sensitive(True)
+		self.buttons["save"].set_sensitive(False)
 		self.buttons["update"].set_sensitive(True)
 		self.buttons["delete"].set_sensitive(True)
+
+	## END CHANGED Events Handlers
+
+	def _clear_entries(self):
+		tuple(entry.set_text("") for key, entry in self.entries.iteritems())
 
 ###########################################################################################
 
