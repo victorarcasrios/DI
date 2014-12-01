@@ -12,7 +12,6 @@ class App():
 	def __init__(self):
 		self.mainWindow = MainWindow()
 		
-
 ###########################################################################################
 
 ## TODO refactor to data class w/ constructor. 
@@ -29,11 +28,25 @@ class GladeContainer():
 ###########################################################################################
 
 class MainWindow(GladeContainer):
+
+	def __init__(self):
+		GladeContainer.__init__(self)
+		self.this_window = self.builder.get_object("MainMenuWindow")
+
+		self.this_window.connect("destroy", Gtk.main_quit)
+		self.builder.get_object("registrationToolButton").connect(
+			"clicked", lambda widget: RegistrationWindow())
+
+		self.this_window.show_all()
+
+###########################################################################################
+
+class RegistrationWindow(GladeContainer):
 	"""Manage main Window"""
 
 	def __init__(self):
 		GladeContainer.__init__(self)
-		self.this_window 	= self.builder.get_object("MainWindow")
+		self.this_window 	= self.builder.get_object("RegistrationWindow")
 		self.tree_view 		= TreeView(self.builder)
 		self.entries = {
 			"surname"		: self.builder.get_object("surnameEntry"),
@@ -50,7 +63,7 @@ class MainWindow(GladeContainer):
 			"delete"		: self.builder.get_object("deleteUserButton"),
 			"close"			: self.builder.get_object("closeWindowButton")
 		}		
-		self.this_window.connect("destroy", Gtk.main_quit)
+		self.this_window.connect("destroy", lambda window: window.destroy())
 		self.tree_view.selection.connect("changed", self._on_tree_view_selection_changed)
 		{entry.connect("changed", self._on_entry_changed) for k, entry in self.entries.iteritems()}
 		self.buttons["new"].connect("clicked", self._prepare_to_create)
@@ -192,10 +205,10 @@ class TreeView():
 
 class ConfirmDeleteDialog(GladeContainer):
 
-	def __init__(self, mainWindow):
+	def __init__(self, registrationWindow):
 		GladeContainer.__init__(self)
 		
-		self._mainWindow = mainWindow
+		self._registrationWindow = registrationWindow
 		self._this_dialog = self.builder.get_object("ConfirmDeleteDialog")
 		self._confirmButton = self.builder.get_object("confirmDeleteButton")
 		self._cancelButton = self.builder.get_object("cancelDeleteButton")
@@ -206,7 +219,7 @@ class ConfirmDeleteDialog(GladeContainer):
 		self._this_dialog.show_all()
 
 	def _on_delete_confirmed(self, widget):
-		self._mainWindow._delete_user()
+		self._registrationWindow._delete_user()
 		self._this_dialog.destroy()
 
 ###########################################################################################
