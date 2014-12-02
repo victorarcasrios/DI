@@ -29,21 +29,26 @@ class GladeContainer():
 
 class MainWindow(GladeContainer):
 
-	_registrationWindow = None
+	_registration_window = None
 
 	def __init__(self):
 		GladeContainer.__init__(self)
 		self.this_window = self.builder.get_object("MainMenuWindow")
 
 		self.this_window.connect("destroy", Gtk.main_quit)
+		self.builder.get_object("closeImageMenuItem").connect("activate", Gtk.main_quit)
 		self.builder.get_object("registrationToolButton").connect(
 			"clicked", self._openRegistrationWindow)
 
 		self.this_window.show_all()
 
 	def _openRegistrationWindow(self, widget):
-		if not self._registrationWindow:
-			self._registrationWindow = RegistrationWindow()
+		if not self._registration_window:
+			self._registration_window = RegistrationWindow()
+			self._registration_window.this_window.connect("destroy", self._unset_registration_window)
+
+	def _unset_registration_window(self, widget):
+		self._registration_window = None
 
 ###########################################################################################
 
@@ -69,7 +74,6 @@ class RegistrationWindow(GladeContainer):
 			"delete"		: self.builder.get_object("deleteUserButton"),
 			"close"			: self.builder.get_object("closeWindowButton")
 		}		
-		self.this_window.connect("destroy", lambda window: window.destroy())
 		self.tree_view.selection.connect("changed", self._on_tree_view_selection_changed)
 		{entry.connect("changed", self._on_entry_changed) for k, entry in self.entries.iteritems()}
 		self.buttons["new"].connect("clicked", self._prepare_to_create)
@@ -77,7 +81,7 @@ class RegistrationWindow(GladeContainer):
 		self.buttons["update"].connect("clicked", self._update_data)
 		self.buttons["cancel"].connect("clicked", self._on_cancel_clicked)
 		self.buttons["delete"].connect("clicked", self._on_delete_clicked)
-		self.buttons["close"].connect("clicked", Gtk.main_quit)
+		self.buttons["close"].connect("clicked", lambda widget: self.this_window.destroy())
 
 		## Set buttons sensitivity initial state
 		self._on_tree_view_selection_changed(self.tree_view.selection)
@@ -90,7 +94,6 @@ class RegistrationWindow(GladeContainer):
 		self.entries["surname"].grab_focus()
 		self.tree_view.selection.unselect_iter(self._selected_iter)	
 
-	# TODO Refactor to warning about unsuccesful insertion
 	def _save_data(self, widget):
 		data = self._get_data()
 		if self._is_proper_user_data(data):
@@ -132,6 +135,7 @@ class RegistrationWindow(GladeContainer):
 	def _is_proper_user_data(self, data):
 		for datum in data:
 			if not datum:
+				AlertDialog("Todos los datos son obligatorios")
 				return False
 		return True
 	## End Create or update HELPERS
@@ -209,12 +213,26 @@ class TreeView():
 
 ###########################################################################################
 
+class AlertDialog(GladeContainer):
+
+	def __init__(self, message):
+		GladeContainer.__init__(self)
+
+		self._this_dialog = self.builder.get_object("AlertDialog")
+		self._this_dialog.format_secondary_text(message)
+
+		self.builder.get_object("alertDialogActionArea").get_children()[0].connect(
+			"clicked", lambda widget: self._this_dialog.destroy())
+		self._this_dialog.show_all()
+
+###########################################################################################
+
 class ConfirmDeleteDialog(GladeContainer):
 
 	def __init__(self, registrationWindow):
 		GladeContainer.__init__(self)
 		
-		self._registrationWindow = registrationWindow
+		self._registration_window = registrationWindow
 		self._this_dialog = self.builder.get_object("ConfirmDeleteDialog")
 		self._confirmButton = self.builder.get_object("confirmDeleteButton")
 		self._cancelButton = self.builder.get_object("cancelDeleteButton")
@@ -225,7 +243,7 @@ class ConfirmDeleteDialog(GladeContainer):
 		self._this_dialog.show_all()
 
 	def _on_delete_confirmed(self, widget):
-		self._registrationWindow._delete_user()
+		self._registration_window._delete_user()
 		self._this_dialog.destroy()
 
 ###########################################################################################

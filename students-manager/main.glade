@@ -12,8 +12,7 @@
     <property name="type_hint">dialog</property>
     <property name="buttons">ok</property>
     <property name="text" translatable="yes">No se pueden guardar los datos insertados</property>
-    <property name="secondary_text" translatable="yes">Todos los datos son obligatorios. 
-O falta insertar alguno(s), o lo ha hecho sin respetar el formato adecuado, o alguno(s) de los datos que ha introducido ya existen en la base dedatos</property>
+    <property name="secondary_text" translatable="yes">Todos los datos son obligatorios</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="alertDialogBox">
         <property name="can_focus">False</property>
