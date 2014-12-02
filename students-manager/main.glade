@@ -109,6 +109,21 @@ de la base de datos.</property>
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="registrationIcon">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">img/registration-icon.png</property>
+  </object>
+  <object class="GtkImage" id="schoolsIcon">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">img/schools-icon.png</property>
+  </object>
+  <object class="GtkImage" id="specialtiesIcon">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">img/specialties-icon.png</property>
+  </object>
   <object class="GtkListStore" id="store">
     <columns>
       <!-- column-name ID -->
@@ -128,7 +143,7 @@ de la base de datos.</property>
   <object class="GtkWindow" id="RegistrationWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Administración de estudiantes</property>
-    <property name="window_position">center-on-parent</property>
+    <property name="window_position">center</property>
     <property name="default_width">1000</property>
     <property name="default_height">600</property>
     <property name="destroy_with_parent">True</property>
@@ -519,24 +534,28 @@ de la base de datos.</property>
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="studentsIcon">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">img/students-icon.png</property>
+  </object>
   <object class="GtkImage" id="usersIcon">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="resource">img/users-icon.png</property>
+    <property name="pixbuf">img/users-icon.png</property>
   </object>
   <object class="GtkWindow" id="MainMenuWindow">
     <property name="can_focus">False</property>
     <property name="margin_bottom">7</property>
     <property name="title" translatable="yes">Bienvenidos al sistema de matrícula</property>
     <property name="window_position">center</property>
-    <property name="default_width">1000</property>
-    <property name="default_height">80</property>
+    <property name="gravity">north</property>
     <child>
       <object class="GtkBox" id="MainWindowVBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="hexpand">True</property>
-        <property name="vexpand">True</property>
+        <property name="hexpand">False</property>
+        <property name="vexpand">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuBar" id="menubar">
@@ -615,13 +634,14 @@ de la base de datos.</property>
           <object class="GtkToolbar" id="toolbar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
+            <property name="hexpand">False</property>
+            <property name="vexpand">False</property>
             <child>
               <object class="GtkToolButton" id="usersToolButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">toolbutton</property>
+                <property name="is_important">True</property>
+                <property name="label" translatable="yes">Usuarios</property>
                 <property name="use_underline">True</property>
                 <property name="icon_widget">usersIcon</property>
               </object>
@@ -634,9 +654,10 @@ de la base de datos.</property>
               <object class="GtkToolButton" id="specialtiesToolButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="is_important">True</property>
                 <property name="label" translatable="yes">Especialidades</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-dialog-warning</property>
+                <property name="icon_widget">specialtiesIcon</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -647,9 +668,10 @@ de la base de datos.</property>
               <object class="GtkToolButton" id="studentsToolButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="is_important">True</property>
                 <property name="label" translatable="yes">Estudiantes</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-help</property>
+                <property name="icon_widget">studentsIcon</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -660,9 +682,10 @@ de la base de datos.</property>
               <object class="GtkToolButton" id="schoolsToolButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="is_important">True</property>
                 <property name="label" translatable="yes">Inst. Educativas</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-add</property>
+                <property name="icon_widget">schoolsIcon</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -673,9 +696,10 @@ de la base de datos.</property>
               <object class="GtkToolButton" id="registrationToolButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="is_important">True</property>
                 <property name="label" translatable="yes">Matrícula</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-page-setup</property>
+                <property name="icon_widget">registrationIcon</property>
               </object>
               <packing>
                 <property name="expand">False</property>

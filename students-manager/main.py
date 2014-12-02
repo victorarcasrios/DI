@@ -29,15 +29,21 @@ class GladeContainer():
 
 class MainWindow(GladeContainer):
 
+	_registrationWindow = None
+
 	def __init__(self):
 		GladeContainer.__init__(self)
 		self.this_window = self.builder.get_object("MainMenuWindow")
 
 		self.this_window.connect("destroy", Gtk.main_quit)
 		self.builder.get_object("registrationToolButton").connect(
-			"clicked", lambda widget: RegistrationWindow())
+			"clicked", self._openRegistrationWindow)
 
 		self.this_window.show_all()
+
+	def _openRegistrationWindow(self, widget):
+		if not self._registrationWindow:
+			self._registrationWindow = RegistrationWindow()
 
 ###########################################################################################
 
