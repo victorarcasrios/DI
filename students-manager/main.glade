@@ -382,6 +382,7 @@ de la base de datos.</property>
                           <object class="GtkEntry" id="surnameEntry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="max_length">20</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -394,6 +395,7 @@ de la base de datos.</property>
                           <object class="GtkEntry" id="motherSurnameEntry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="max_length">20</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -406,6 +408,7 @@ de la base de datos.</property>
                           <object class="GtkEntry" id="nameEntry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="max_length">30</property>
                           </object>
                           <packing>
                             <property name="left_attach">2</property>
@@ -461,6 +464,7 @@ de la base de datos.</property>
                           <object class="GtkEntry" id="dniEntry">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="max_length">9</property>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -474,6 +478,7 @@ de la base de datos.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="hexpand">True</property>
+                            <property name="max_length">40</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>

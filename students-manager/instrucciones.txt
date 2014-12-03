@@ -1,0 +1,16 @@
+INSTRUCCIONES
+-------------
+
+A) Sin ningun registro seleccionado:
+	1. CANCELAR: Limpia todos los campos de entrada de texto
+	2. GUARDAR: Guarda los datos de los campos de entrada de texto como un registro nuevo **
+
+B) Con cualquier registro seleccionado:
+	1. NUEVO: Limpia todos los campos de entrada de texto y deselecciona el registro, dejandolo todo listo para insertar uno nuevo
+	2. CANCELAR: Restaura los valores de los campos de entrada de texto a los valores actuales del registro
+	3. MODIFICAR: Actualiza los datos del registro seleccionado con los valores de los campos de entrada de texto **
+	4. ELIMINAR: Elimina el registro seleccionado
+
+C) En cualquiera de ambos casos CERRAR cierra la ventana de matriculacion de estudiantes
+
+	(**) si todos los campos de texto han sido rellenados y el DNI no esta registrado aun para otro estudiante. En caso de exito los campos se vacian y la rejilla de registros se actualiza

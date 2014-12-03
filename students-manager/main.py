@@ -14,8 +14,6 @@ class App():
 		
 ###########################################################################################
 
-## TODO refactor to data class w/ constructor. 
-##		Model variable users may be a class var, not an instance one
 class GladeContainer():
 	"""Data class for inheritance purposes only"""
 
@@ -28,6 +26,7 @@ class GladeContainer():
 ###########################################################################################
 
 class MainWindow(GladeContainer):
+	"""Manage MainWindow Gtk.Window"""
 
 	_registration_window = None
 
@@ -53,7 +52,7 @@ class MainWindow(GladeContainer):
 ###########################################################################################
 
 class RegistrationWindow(GladeContainer):
-	"""Manage main Window"""
+	"""Manage RegistrationWindow Gtk.Window"""
 
 	def __init__(self):
 		GladeContainer.__init__(self)
@@ -97,7 +96,7 @@ class RegistrationWindow(GladeContainer):
 	def _save_data(self, widget):
 		data = self._get_data()
 		if self._is_proper_user_data(data):
-			Users.insert(data)
+			Students.insert(data)
 			self._clear_entries()
 			self.tree_view.refresh()
 
@@ -105,7 +104,7 @@ class RegistrationWindow(GladeContainer):
 		user_id = self.tree_view.store[self._selected_iter][0]
 		data = self._get_data()
 		if self._is_proper_user_data(data):
-			Users.update(user_id, data)
+			Students.update(user_id, data)
 			self.tree_view.refresh()
 
 	def _on_delete_clicked(self, widget):
@@ -113,7 +112,7 @@ class RegistrationWindow(GladeContainer):
 
 	def _delete_user(self):		
 		user_id = self.tree_view.store[self._selected_iter][0]
-		Users.delete(user_id)	
+		Students.delete(user_id)	
 		self.tree_view.refresh()
 
 	def _on_cancel_clicked(self, widget):
@@ -188,7 +187,7 @@ class RegistrationWindow(GladeContainer):
 ###########################################################################################
 
 class TreeView():
-	"""Manage users TreeView"""
+	"""Manage students TreeView"""
 
 	def __init__(self, container_builder):
 		self.builder 		= container_builder
@@ -207,14 +206,15 @@ class TreeView():
 
 	def refresh(self):
 		self.store.clear()
-		users = Users.list_all()
+		users = Students.list_all()
 		for user in users:
 			self.store.append(user)
 
 ###########################################################################################
 
 class AlertDialog(GladeContainer):
-
+	"""Manage AlertDialog Gtk.Dialog"""
+	
 	def __init__(self, message):
 		GladeContainer.__init__(self)
 
@@ -228,6 +228,7 @@ class AlertDialog(GladeContainer):
 ###########################################################################################
 
 class ConfirmDeleteDialog(GladeContainer):
+	"""Manage ConfirmDeleteDialog Gtk.Dialog"""
 
 	def __init__(self, registrationWindow):
 		GladeContainer.__init__(self)
@@ -248,18 +249,18 @@ class ConfirmDeleteDialog(GladeContainer):
 
 ###########################################################################################
 
-class Users:
-	"""Model for ´users´ table"""
+class Students:
+	"""Model for ´students´ table"""
 
 	_conn = sqlite3.connect("main.db")
 	_conn.text_factory = str
 	_c = _conn.cursor()
-	_table = "users"
+	_table = "students"
 
 	@classmethod
-	def delete(cls, userId):
+	def delete(cls, student_id):
 		delete = "DELETE FROM {0} WHERE id = ?".format(cls._table)
-		cls._c.execute(delete, (userId,))
+		cls._c.execute(delete, (student_id,))
 		cls._conn.commit()
 
 	@classmethod
@@ -274,10 +275,10 @@ class Users:
 		return cls._c.fetchall()
 
 	@classmethod
-	def update(cls, user_id, data):
+	def update(cls, student_id, data):
 		update = """UPDATE {0} set surname = ?, mother_surname = ?, name = ?, dni = ?, 
 			address = ? WHERE id = ?""".format(cls._table)
-		data += (user_id,)
+		data += (student_id,)
 		cls._c.execute(update, data)
 		cls._conn.commit()
 
