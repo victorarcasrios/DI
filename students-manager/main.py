@@ -36,6 +36,8 @@ class MainWindow(GladeContainer):
 
 		self.this_window.connect("destroy", Gtk.main_quit)
 		self.builder.get_object("closeImageMenuItem").connect("activate", Gtk.main_quit)
+		self.builder.get_object("aboutImageMenuItem").connect(
+			"activate", lambda widget: AboutDialog())
 		self.builder.get_object("registrationToolButton").connect(
 			"clicked", self._openRegistrationWindow)
 
@@ -246,6 +248,21 @@ class ConfirmDeleteDialog(GladeContainer):
 	def _on_delete_confirmed(self, widget):
 		self._registration_window._delete_user()
 		self._this_dialog.destroy()
+
+###########################################################################################
+
+class AboutDialog(GladeContainer):
+	"""Manage AboutDialog Gtk.Dialog"""
+
+	def __init__(self):
+		GladeContainer.__init__(self)
+
+		self._this_dialog = self.builder.get_object("AboutDialog")
+		self._close_button = self.builder.get_object("AboutDialogActionArea").get_children()[0]
+
+		self._close_button.connect("clicked", lambda widget: self._this_dialog.destroy())
+
+		self._this_dialog.show_all()
 
 ###########################################################################################
 
