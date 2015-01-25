@@ -1,0 +1,34 @@
+body, .panel{
+	background: #066600;
+}
+
+th, label{
+	color: whitesmoke;
+}
+
+td{
+	color: black;
+}
+
+.alert-danger{
+	background: #861312;
+	border: 3px red double;
+	color: yellow;
+}
+
+.alert-danger>h4{
+	display: inline;
+}
+
+.alert-danger>.btn{
+	float: right;
+}
+
+.panel-heading{
+	overflow: auto;
+}
+
+.panel-heading>.btn{
+	float: right;
+	margin-right: 30px;
+}
